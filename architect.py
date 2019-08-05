@@ -16,9 +16,9 @@ class Architect(object):
     self.model = model
     #if model is DataParallel
     if(hasattr(model, 'module') ):
-        self.model = model 
-    else:
         self.model = model.module
+    else:
+        self.model = model
     self.optimizer = torch.optim.Adam(self.model.arch_parameters(),
             lr=args.arch_learning_rate, betas=(0.5, 0.999), weight_decay=args.arch_weight_decay)
 
