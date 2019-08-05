@@ -162,16 +162,17 @@ def train(train_queue, valid_queue, model, architect, criterion, optimizer, lr,e
     input = input.cuda(non_blocking=True)
     print('1')
     # get a random minibatch from the search queue with replacement
-    input_search, target_search = next(iter(valid_queue))
+    
     #try:
     #  input_search, target_search = next(valid_queue_iter)
     #except:
     #  valid_queue_iter = iter(valid_queue)
     #  input_search, target_search = next(valid_queue_iter)
-    input_search = input_search.cuda(non_blocking=True)
-    target_search = target_search.cuda(non_blocking=True)
-    print('2')
+    
     if epoch>=15:
+      input_search, target_search = next(iter(valid_queue))
+      input_search = input_search.cuda(non_blocking=True)
+      target_search = target_search.cuda(non_blocking=True)
       architect.step(input, target, input_search, target_search, lr, optimizer, unrolled=args.unrolled)
     print('3')
     optimizer.zero_grad()
