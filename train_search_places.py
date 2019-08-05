@@ -115,6 +115,7 @@ def main():
             normalize,
         ]))
 '''
+
   num_train = len(train_data)
   indices = list(range(num_train))
   split = int(np.floor(0.5 * num_train))
