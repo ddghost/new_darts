@@ -121,6 +121,9 @@ def main():
         valid_data, batch_size=args.batch_size, shuffle=False, pin_memory=True, num_workers=args.workers)
 
   architect = Architect(model, args)
+  architect = = nn.DataParallel(architect, device_ids)
+  architect = architect.cuda()
+
   scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
         optimizer, float(args.epochs), eta_min=args.learning_rate_min)
   for epoch in range(args.epochs):
