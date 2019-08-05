@@ -127,8 +127,11 @@ def main():
     scheduler.step()
     lr = scheduler.get_lr()[0]
     logging.info('epoch %d lr %e', epoch, lr)
-
-    genotype = model.genotype()
+    ##if model is DataParallel
+    if(hasattr(model, 'module') ):
+        genotype = model.module.genotype()
+    else:
+        genotype = model.genotype()
     logging.info('genotype = %s', genotype)
 
     #print(F.softmax(model.alphas_normal, dim=-1))

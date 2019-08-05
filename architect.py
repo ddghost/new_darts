@@ -14,7 +14,8 @@ class Architect(object):
     self.network_momentum = args.momentum
     self.network_weight_decay = args.weight_decay
     self.model = model
-    if(model.module is not None ):
+    #if model is DataParallel
+    if(hasattr(model, 'module') ):
         self.optimizer = torch.optim.Adam(self.model.module.arch_parameters(),
             lr=args.arch_learning_rate, betas=(0.5, 0.999), weight_decay=args.arch_weight_decay)
     else:
