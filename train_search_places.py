@@ -157,10 +157,8 @@ def train(train_queue, valid_queue, model, architect, criterion, optimizer, lr,e
   for step, (input, target) in enumerate(train_queue):
     model.train()
     n = input.size(0)
-    print('0')
     target = target.cuda(non_blocking=True)
     input = input.cuda(non_blocking=True)
-    print('1')
     # get a random minibatch from the search queue with replacement
     
     #try:
@@ -174,21 +172,17 @@ def train(train_queue, valid_queue, model, architect, criterion, optimizer, lr,e
       input_search = input_search.cuda(non_blocking=True)
       target_search = target_search.cuda(non_blocking=True)
       architect.step(input, target, input_search, target_search, lr, optimizer, unrolled=args.unrolled)
-    print('3')
+
     optimizer.zero_grad()
-    print('4')
+
     logits = model(input)
-    print('5')
+
     loss = criterion(logits, target)
-    print('6')
     loss.backward()
-    print('7')
     nn.utils.clip_grad_norm(model.parameters(), args.grad_clip)
-    print('8')
     optimizer.step()
-    print('9')
     prec1, prec5 = utils.accuracy(logits, target, topk=(1, 5))
-    print('10')
+
     objs.update(loss.item(), n)
     top1.update(prec1.item(), n)
     top5.update(prec5.item(), n)
