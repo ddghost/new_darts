@@ -136,7 +136,7 @@ def train(train_queue, valid_queue, model, architect, criterion, optimizer, lr,e
   objs = utils.AvgrageMeter()
   top1 = utils.AvgrageMeter()
   top5 = utils.AvgrageMeter()
-
+  print(dir(train_queue))
   for step, (input, target) in enumerate(train_queue):
     model.train()
     n = input.size(0)
@@ -150,8 +150,8 @@ def train(train_queue, valid_queue, model, architect, criterion, optimizer, lr,e
     #except:
     #  valid_queue_iter = iter(valid_queue)
     #  input_search, target_search = next(valid_queue_iter)
-    input_search = input.cuda(non_blocking=True)
-    target_search = target.cuda(non_blocking=True)
+    input_search = input_search.cuda(non_blocking=True)
+    target_search = target_search.cuda(non_blocking=True)
 
     if epoch>=15:
       architect.step(input, target, input_search, target_search, lr, optimizer, unrolled=args.unrolled)
