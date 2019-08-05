@@ -63,12 +63,12 @@ def main():
     sys.exit(1)
 
   np.random.seed(args.seed)
-  torch.cuda.set_device(args.gpu)
+  torch.cuda.set_device(initGpu)
   cudnn.benchmark = True
   torch.manual_seed(args.seed)
   cudnn.enabled=True
   torch.cuda.manual_seed(args.seed)
-  logging.info('gpu device = %d' % args.gpu)
+  logging.info('gpu device = %d' % initGpu)
   logging.info("args = %s", args)
 
   criterion = nn.CrossEntropyLoss()
