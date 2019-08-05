@@ -37,7 +37,7 @@ parser.add_argument('--seed', type=int, default=0, help='random seed')
 parser.add_argument('--arch', type=str, default='PCDARTS', help='which architecture to use')
 parser.add_argument('--grad_clip', type=float, default=5., help='gradient clipping')
 parser.add_argument('--label_smooth', type=float, default=0.1, help='label smoothing')
-parser.add_argument('--lr_scheduler', type=str, default='linear', help='lr scheduler, linear or cosine')
+parser.add_argument('--lr_scheduler', type=str, default='cosine', help='lr scheduler, linear or cosine')
 parser.add_argument('--tmp_data_dir', type=str, default='/', help='temp data dir')
 parser.add_argument('--note', type=str, default='try', help='note for this run')
 
