@@ -113,7 +113,7 @@ def main():
             transforms.ToTensor(),
             normalize,
         ]))
-
+  
   train_queue = torch.utils.data.DataLoader(
         train_data, batch_size=args.batch_size, shuffle=True, pin_memory=True, num_workers=args.workers)
 
@@ -121,7 +121,8 @@ def main():
         valid_data, batch_size=args.batch_size, shuffle=False, pin_memory=True, num_workers=args.workers)
 
   architect = Architect(model, args)
-
+  scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
+        optimizer, float(args.epochs), eta_min=args.learning_rate_min)
   for epoch in range(args.epochs):
     scheduler.step()
     lr = scheduler.get_lr()[0]
