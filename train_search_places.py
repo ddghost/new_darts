@@ -57,7 +57,7 @@ logging.getLogger().addHandler(fh)
 
 CLASSES = 365
 initGpu = 2
-device_ids = [2,3]
+device_ids = [0,1,2,3]
 
 def main():
   if not torch.cuda.is_available():
@@ -168,7 +168,7 @@ def train(train_queue, valid_queue, model, architect, criterion, optimizer, lr,e
     #except:
     #  valid_queue_iter = iter(valid_queue)
     #  input_search, target_search = next(valid_queue_iter)
-    
+
     if epoch>=15:
       input_search, target_search = next(iter(valid_queue))
       input_search = input_search.cuda(non_blocking=True)
@@ -218,7 +218,6 @@ def infer(valid_queue, model, criterion):
     objs.update(loss.item(), n)
     top1.update(prec1.item(), n)
     top5.update(prec5.item(), n)
-
 
     if step % args.report_freq == 0:
       logging.info('valid %03d %e %f %f', step, objs.avg, top1.avg, top5.avg)
