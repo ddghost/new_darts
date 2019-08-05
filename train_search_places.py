@@ -167,7 +167,7 @@ def train(train_queue, valid_queue, model, architect, criterion, optimizer, lr,e
     #  valid_queue_iter = iter(valid_queue)
     #  input_search, target_search = next(valid_queue_iter)
 
-    if epoch>=15:
+    if epoch>=0:
       input_search, target_search = next(iter(valid_queue))
       input_search = input_search.cuda(non_blocking=True)
       target_search = target_search.cuda(non_blocking=True)
