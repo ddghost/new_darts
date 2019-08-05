@@ -76,7 +76,7 @@ class Architect(object):
     assert offset == len(theta)
     model_dict.update(params)
     model_new.load_state_dict(model_dict)
-    return DataParallel(model_new, [2,3]).cuda()
+    return model_new.cuda()
 
   def _hessian_vector_product(self, vector, input, target, r=1e-2):
     R = r / _concat(vector).norm()
