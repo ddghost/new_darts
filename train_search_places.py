@@ -118,7 +118,7 @@ def main():
         train_data, batch_size=args.batch_size, shuffle=True, pin_memory=True, num_workers=args.workers)
 
   valid_queue = torch.utils.data.DataLoader(
-        valid_data, batch_size=args.batch_size, shuffle=False, pin_memory=True, num_workers=args.workers)
+        valid_data, batch_size=args.batch_size, shuffle=True, pin_memory=True, num_workers=args.workers)
 
   architect = Architect(model, args)
   
