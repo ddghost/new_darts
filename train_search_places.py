@@ -105,7 +105,7 @@ def main():
             transforms.ToTensor(),
             normalize,
         ]))
-'''
+
   valid_data = dset.ImageFolder(
         validdir,
         transforms.Compose([
@@ -114,7 +114,6 @@ def main():
             transforms.ToTensor(),
             normalize,
         ]))
-'''
 
   num_train = len(train_data)
   indices = list(range(num_train))
