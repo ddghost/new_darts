@@ -136,7 +136,7 @@ def train(train_queue, valid_queue, model, architect, criterion, optimizer, lr,e
   objs = utils.AvgrageMeter()
   top1 = utils.AvgrageMeter()
   top5 = utils.AvgrageMeter()
-  print(train_queue.__len__)
+  print(train_queue.__len__())
   for step, (input, target) in enumerate(train_queue):
     model.train()
     n = input.size(0)
