@@ -161,8 +161,8 @@ def train(train_queue, valid_queue, model, architect, criterion, optimizer, lr,e
     #except:
     #  valid_queue_iter = iter(valid_queue)
     #  input_search, target_search = next(valid_queue_iter)
-    input_search = Variable(input_search, requires_grad=False).cuda()
-    target_search = Variable(target_search, requires_grad=False).cuda(async=True)
+    input_search = input_search.cuda(non_blocking=True)
+    target_search = target_search.cuda(non_blocking=True)
 
     if epoch>=15:
       architect.step(input, target, input_search, target_search, lr, optimizer, unrolled=args.unrolled)
