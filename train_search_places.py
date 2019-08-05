@@ -123,7 +123,8 @@ def main():
   architect = Architect(model, args)
   architect = nn.DataParallel(architect, device_ids)
   architect = architect.cuda()
-
+  architect = architect.module
+  
   scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
         optimizer, float(args.epochs), eta_min=args.learning_rate_min)
   for epoch in range(args.epochs):
