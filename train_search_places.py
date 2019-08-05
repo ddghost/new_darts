@@ -105,6 +105,7 @@ def main():
             transforms.ToTensor(),
             normalize,
         ]))
+'''
   valid_data = dset.ImageFolder(
         validdir,
         transforms.Compose([
@@ -113,12 +114,23 @@ def main():
             transforms.ToTensor(),
             normalize,
         ]))
-  
+'''
+  num_train = len(train_data)
+  indices = list(range(num_train))
+  split = int(np.floor(0.5 * num_train))
+
   train_queue = torch.utils.data.DataLoader(
-        train_data, batch_size=args.batch_size, shuffle=True, pin_memory=True, num_workers=args.workers)
+        train_data, 
+        batch_size=args.batch_size, 
+        shuffle=True, 
+        pin_memory=True, 
+        num_workers=args.workers)
 
   valid_queue = torch.utils.data.DataLoader(
-        valid_data, batch_size=args.batch_size, shuffle=True, pin_memory=True, num_workers=args.workers)
+        train_data, batch_size=args.batch_size, 
+        shuffle=True,
+        pin_memory=True, 
+        num_workers=args.workers)
 
   architect = Architect(model, args)
   
