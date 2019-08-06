@@ -20,7 +20,7 @@ from architect import Architect
 
 
 parser = argparse.ArgumentParser("places")
-parser.add_argument('--workers', type=int, default=32, help='number of workers to load dataset')
+parser.add_argument('--workers', type=int, default=16, help='number of workers to load dataset')
 parser.add_argument('--batch_size', type=int, default=256, help='batch size')
 parser.add_argument('--learning_rate', type=float, default=0.1, help='init learning rate')
 parser.add_argument('--learning_rate_min', type=float, default=0.001, help='min learning rate')
@@ -120,15 +120,14 @@ def main():
   split = int(np.floor(0.5 * num_train))
 
   train_queue = torch.utils.data.DataLoader(
-        train_data, 
-        batch_size=args.batch_size, 
-        shuffle=True, 
-        pin_memory=True, 
+        train_data, batch_size=args.batch_size,
+        sampler=torch.utils.data.sampler.SubsetRandomSampler(indices[:split]),
+        pin_memory=True,
         num_workers=args.workers)
 
   valid_queue = torch.utils.data.DataLoader(
-        train_data, batch_size=args.batch_size, 
-        shuffle=True,
+        train_data, batch_size=args.batch_size,
+        sampler=torch.utils.data.sampler.SubsetRandomSampler(indices[split:num_train]),
         pin_memory=True, 
         num_workers=args.workers)
 
