@@ -20,7 +20,7 @@ from architect import Architect
 
 
 parser = argparse.ArgumentParser("places")
-parser.add_argument('--workers', type=int, default=16, help='number of workers to load dataset')
+parser.add_argument('--workers', type=int, default=8, help='number of workers to load dataset')
 parser.add_argument('--batch_size', type=int, default=256, help='batch size')
 parser.add_argument('--learning_rate', type=float, default=0.1, help='init learning rate')
 parser.add_argument('--learning_rate_min', type=float, default=0.001, help='min learning rate')
