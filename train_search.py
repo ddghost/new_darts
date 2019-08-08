@@ -125,9 +125,9 @@ def main():
     logging.info('train_acc %f', train_acc)
 
     # validation
-    if args.epochs-epoch<=1:
-      valid_acc, valid_obj = infer(valid_queue, model, criterion)
-      logging.info('valid_acc %f', valid_acc)
+    
+    valid_acc, valid_obj = infer(valid_queue, model, criterion)
+    logging.info('valid_acc %f', valid_acc)
 
     utils.save(model, os.path.join(args.save, 'weights.pt'))
 

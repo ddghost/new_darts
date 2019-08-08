@@ -7,7 +7,7 @@ from utils import drop_path
 
 class Cell(nn.Module):
 
-  def __init__(self, genotype, C_prev_prev, C_prev, C, reduction, reduction_prev):
+  def __init__(self, genotype, nowStage, C_prev_prev, C_prev, C, reduction, reduction_prev):
     super(Cell, self).__init__()
     print(C_prev_prev, C_prev, C)
 
@@ -21,7 +21,12 @@ class Cell(nn.Module):
       op_names, indices = zip(*genotype.reduce)
       concat = genotype.reduce_concat
     else:
-      op_names, indices = zip(*genotype.normal)
+      if(nowStage == 1)
+        op_names, indices = zip(*genotype.normal_stage1)
+      elif(nowStage == 2)
+        op_names, indices = zip(*genotype.normal_stage2)
+      elif(nowStage == 3)
+        op_names, indices = zip(*genotype.normal_stage3)
       concat = genotype.normal_concat
     self._compile(C, op_names, indices, concat, reduction)
 
@@ -124,14 +129,19 @@ class NetworkCIFAR(nn.Module):
     
     C_prev_prev, C_prev, C_curr = C_curr, C_curr, C
     self.cells = nn.ModuleList()
+    nowStage = 1
     reduction_prev = False
     for i in range(layers):
+
       if i in [layers//3, 2*layers//3]:
         C_curr *= 2
+        nowStage += 1
         reduction = True
+	  else:
       else:
         reduction = False
-      cell = Cell(genotype, C_prev_prev, C_prev, C_curr, reduction, reduction_prev)
+
+      cell = Cell(nowGenotype, nowStage, C_prev_prev, C_prev, C_curr, reduction, reduction_prev)
       reduction_prev = reduction
       self.cells += [cell]
       C_prev_prev, C_prev = C_prev, cell.multiplier*C_curr
