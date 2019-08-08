@@ -142,7 +142,7 @@ def train(train_queue, model, criterion, optimizer):
     n = input.size(0)
     objs.update(loss.item(), n)
     top1.update(prec1.item(), n)
-    top5.update(prec5.ditem(), n)
+    top5.update(prec5.item(), n)
 
     if step % args.report_freq == 0:
       logging.info('train %03d %e %f %f', step, objs.avg, top1.avg, top5.avg)
