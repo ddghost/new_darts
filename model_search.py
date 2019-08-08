@@ -148,7 +148,7 @@ class Network(nn.Module):
       else:
         if(i < 2):
             weights = F.softmax(self.alphas_normal_stage1, dim=-1)
-        elif(2<i<6)
+        elif(2<i<6):
             weights = F.softmax(self.alphas_normal_stage2, dim=-1)
         else:
             weights = F.softmax(self.alphas_normal_stage3, dim=-1)
