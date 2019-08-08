@@ -140,7 +140,7 @@ class NetworkCIFAR(nn.Module):
       else:
         reduction = False
 
-      cell = Cell(nowGenotype, nowStage, C_prev_prev, C_prev, C_curr, reduction, reduction_prev)
+      cell = Cell(genotype, nowStage, C_prev_prev, C_prev, C_curr, reduction, reduction_prev)
       reduction_prev = reduction
       self.cells += [cell]
       C_prev_prev, C_prev = C_prev, cell.multiplier*C_curr
