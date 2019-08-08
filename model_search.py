@@ -146,7 +146,12 @@ class Network(nn.Module):
           n += 1
           weights2 = torch.cat([weights2,tw2],dim=0)
       else:
-        weights = F.softmax(self.alphas_normal, dim=-1)
+        if(i < 2):
+            weights = F.softmax(self.alphas_normal_stage1, dim=-1)
+        elif(2<i<6)
+            weights = F.softmax(self.alphas_normal_stage2, dim=-1)
+        else:
+            weights = F.softmax(self.alphas_normal_stage3, dim=-1)
         n = 3
         start = 2
         weights2 = F.softmax(self.betas_normal[0:2], dim=-1)
@@ -169,12 +174,16 @@ class Network(nn.Module):
     k = sum(1 for i in range(self._steps) for n in range(2+i))
     num_ops = len(PRIMITIVES)
 
-    self.alphas_normal = Variable(1e-3*torch.randn(k, num_ops).cuda(), requires_grad=True)
+    self.alphas_normal_stage1 = Variable(1e-3*torch.randn(k, num_ops).cuda(), requires_grad=True)
+    self.alphas_normal_stage2 = Variable(1e-3*torch.randn(k, num_ops).cuda(), requires_grad=True)
+    self.alphas_normal_stage3 = Variable(1e-3*torch.randn(k, num_ops).cuda(), requires_grad=True)
     self.alphas_reduce = Variable(1e-3*torch.randn(k, num_ops).cuda(), requires_grad=True)
     self.betas_normal = Variable(1e-3*torch.randn(k).cuda(), requires_grad=True)
     self.betas_reduce = Variable(1e-3*torch.randn(k).cuda(), requires_grad=True)
     self._arch_parameters = [
-      self.alphas_normal,
+      self.alphas_normal_stage1,
+      self.alphas_normal_stage2,
+      self.alphas_normal_stage3,
       self.alphas_reduce,
       self.betas_normal,
       self.betas_reduce,
@@ -220,12 +229,16 @@ class Network(nn.Module):
       n += 1
       weightsr2 = torch.cat([weightsr2,tw2],dim=0)
       weightsn2 = torch.cat([weightsn2,tn2],dim=0)
-    gene_normal = _parse(F.softmax(self.alphas_normal, dim=-1).data.cpu().numpy(),weightsn2.data.cpu().numpy())
+    gene_normal_stage1 = _parse(F.softmax(self.alphas_normal_stage1, dim=-1).data.cpu().numpy(),weightsn2.data.cpu().numpy())
+    gene_normal_stage2 = _parse(F.softmax(self.alphas_normal_stage2, dim=-1).data.cpu().numpy(),weightsn2.data.cpu().numpy())
+    gene_normal_stage3 = _parse(F.softmax(self.alphas_normal_stage3, dim=-1).data.cpu().numpy(),weightsn2.data.cpu().numpy())
+
     gene_reduce = _parse(F.softmax(self.alphas_reduce, dim=-1).data.cpu().numpy(),weightsr2.data.cpu().numpy())
 
     concat = range(2+self._steps-self._multiplier, self._steps+2)
     genotype = Genotype(
-      normal=gene_normal, normal_concat=concat,
+      normal_stage1=gene_normal_stage1, normal_stage2=gene_normal_stage2, 
+      normal_stage3=gene_normal_stage3, normal_concat=concat,
       reduce=gene_reduce, reduce_concat=concat
     )
     return genotype
