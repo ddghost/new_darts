@@ -21,11 +21,11 @@ class Cell(nn.Module):
       op_names, indices = zip(*genotype.reduce)
       concat = genotype.reduce_concat
     else:
-      if(nowStage == 1)
+      if(nowStage == 1):
         op_names, indices = zip(*genotype.normal_stage1)
-      elif(nowStage == 2)
+      elif(nowStage == 2):
         op_names, indices = zip(*genotype.normal_stage2)
-      elif(nowStage == 3)
+      elif(nowStage == 3):
         op_names, indices = zip(*genotype.normal_stage3)
       concat = genotype.normal_concat
     self._compile(C, op_names, indices, concat, reduction)
