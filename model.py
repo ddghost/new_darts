@@ -137,7 +137,6 @@ class NetworkCIFAR(nn.Module):
         C_curr *= 2
         nowStage += 1
         reduction = True
-	  else:
       else:
         reduction = False
 
