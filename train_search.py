@@ -185,7 +185,7 @@ def infer(valid_queue, model, criterion):
       input = input.cuda(non_blocking=True)
       target = target.cuda(non_blocking=True)
 
-      logits, _ = model(input)
+      logits = model(input)
       loss = criterion(logits, target)
 
       prec1, prec5 = utils.accuracy(logits, target, topk=(1, 5))
