@@ -1,5 +1,6 @@
 import sys
 import genotypes
+import os
 from graphviz import Digraph
 
 
@@ -49,7 +50,9 @@ if __name__ == '__main__':
   except AttributeError:
     print("{} is not specified in genotypes.py".format(genotype_name)) 
     sys.exit(1)
-
-  plot(genotype.normal, "normal")
-  plot(genotype.reduce, "reduction")
+  dataDir = 'newImage'
+  plot(genotype.normal_stage1, os.path.join(dataDir,"normal_stage1") )
+  plot(genotype.normal_stage2, os.path.join(dataDir,"normal_stage2") )
+  plot(genotype.normal_stage3, os.path.join(dataDir,"normal_stage3") )
+  plot(genotype.reduce, os.path.join(dataDir,"reduce") )
 
