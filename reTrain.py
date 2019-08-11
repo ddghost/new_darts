@@ -74,7 +74,7 @@ def main():
   model = Network(args.init_channels, CIFAR_CLASSES, args.layers, args.auxiliary, genotype)
   model = model.cuda()
   if( os.path.exists(args.loadModelPath)):
-    model.load_state_dict(args.loadModelPath)
+    model.load_state_dict(torch.load(args.loadModelPath))
   else:
     logging.info('model path not exist')
     return 
