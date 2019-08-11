@@ -39,7 +39,7 @@ parser.add_argument('--save', type=str, default='reTrain', help='experiment name
 parser.add_argument('--seed', type=int, default=0, help='random seed')
 parser.add_argument('--arch', type=str, default='newGen', help='which architecture to use')
 parser.add_argument('--grad_clip', type=float, default=5, help='gradient clipping')
-parser.add_argument('--modelPath', type=str, default='', help='path of load model')
+parser.add_argument('--loadModelPath', type=str, default='', help='path of load model')
 args = parser.parse_args()
 
 args.save = 'eval-{}-{}'.format(args.save, time.strftime("%Y%m%d-%H%M%S"))
@@ -73,7 +73,7 @@ def main():
   genotype = eval("genotypes.%s" % args.arch)
   model = Network(args.init_channels, CIFAR_CLASSES, args.layers, args.auxiliary, genotype)
   model = model.cuda()
-  if( os.path.exists(modelPath)):
+  if( os.path.exists(args.loadModelPath)):
     model.load_state_dict(modelPath)
   else:
     logging.info('model path not exist')
