@@ -118,17 +118,17 @@ def main():
     utils.save(model, os.path.join(args.save, 'weights.pt'))
 
 
+
 def train(train_queue, model, criterion, optimizer):
   objs = utils.AvgrageMeter()
   top1 = utils.AvgrageMeter()
   top5 = utils.AvgrageMeter()
   model.train()
 
-    
   for step, (input, target) in enumerate(train_queue):
     input = input.cuda(non_blocking=True)
     target = target.cuda(non_blocking=True)
-
+	
     optimizer.zero_grad()
     logits, logits_aux = model(input)
     loss = criterion(logits, target)
@@ -169,7 +169,7 @@ def infer(valid_queue, model, criterion):
       objs.update(loss.item(), n)
       top1.update(prec1.item(), n)
       top5.update(prec5.item(), n)
-      
+
       if step % args.report_freq == 0:
         logging.info('valid %03d %e %f %f', step, objs.avg, top1.avg, top5.avg)
 
