@@ -99,7 +99,7 @@ def main():
     return 
   preTrainCheckpoint = torch.load(args.pre_train_model_path)
   pretrainModel.load_state_dict(preTrainCheckpoint['state_dict'])
-  mixModel = new_search_model.mixModel(preTrainModel, model, criterion)
+  mixModel = new_search_model.mixModel(pretrainModel, model, criterion)
 
   architect = Architect(model, args)
   
