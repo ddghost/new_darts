@@ -263,7 +263,7 @@ class Network(nn.Module):
     return genotype
 
 
-def mixModel(nn.Module):
+class mixModel(nn.Module):
   def __init__(self, preTrainModel, nasModel, criterion):
     self.preTrainModel = preTrainModel
     self.nasModel = nasModel
