@@ -91,8 +91,8 @@ def main():
  
  
   pretrainModel = SENet.se_resnet50(num_classes=CLASSES)
-  pretrainModel = SENet.cuda()
-  pretrainModel = nn.DataParallel(SENet, device_ids)
+  pretrainModel = pretrainModel.cuda()
+  pretrainModel = nn.DataParallel(pretrainModel, device_ids)
 
   if(args.pre_train_model_path==''):
     logging.info('pre_train_model_path must enter')
