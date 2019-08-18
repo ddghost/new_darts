@@ -43,6 +43,7 @@ parser.add_argument('--unrolled', action='store_true', default=False, help='use 
 parser.add_argument('--arch_learning_rate', type=float, default=6e-3, help='learning rate for arch encoding')
 parser.add_argument('--arch_weight_decay', type=float, default=1e-3, help='weight decay for arch encoding')
 parser.add_argument('--data_dir', type=str, default='/', help='data dir')
+parser.add_argument('--pre_train_model_path', type=str, default='', help='pre_train_model_path path')
 args = parser.parse_args()
 
 args.save = 'search-{}-{}'.format(args.save, time.strftime("%Y%m%d-%H%M%S"))
@@ -58,7 +59,7 @@ logging.getLogger().addHandler(fh)
 
 CLASSES = 365
 initGpu = 3
-#device_ids = [3]
+device_ids = [3]
 
 def main():
   if not torch.cuda.is_available():
@@ -77,8 +78,7 @@ def main():
   criterion = nn.CrossEntropyLoss()
   criterion = criterion.cuda()
   model = new_search_model.Network(args.init_channels, CLASSES, args.layers, criterion)
-  torch.cuda.set_device(initGpu)
-  #model = nn.DataParallel(model, device_ids)
+  model = nn.DataParallel(model, device_ids)
   model = model.cuda()
   logging.info("param size = %fMB", utils.count_parameters_in_MB(model))
 
@@ -87,7 +87,52 @@ def main():
       args.learning_rate,
       momentum=args.momentum,
       weight_decay=args.weight_decay)
+  train_queue, valid_queue = getDataQueue(args)
+ 
+ 
+  pretrainModel = SENet.se_resnet50(num_classes=CLASSES)
+  pretrainModel = SENet.cuda()
+  pretrainModel = nn.DataParallel(SENet, device_ids)
 
+  if(args.pre_train_model_path==''):
+    logging.info('pre_train_model_path must enter')
+    return 
+  preTrainCheckpoint = torch.load(args.pre_train_model_path)
+  pretrainModel.load_state_dict(pre_train_model_path['state_dict'])
+  mixModel = new_search_model.mixModel(preTrainModel, model, criterion)
+
+  architect = Architect(model, args)
+  
+  scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
+        optimizer, float(args.epochs), eta_min=args.learning_rate_min)
+  for epoch in range(args.epochs):
+    scheduler.step()
+    lr = scheduler.get_lr()[0]
+    logging.info('epoch %d lr %e', epoch, lr)
+    ##if model is DataParallel
+    if(hasattr(model, 'module') ):
+        genotype = model.module.genotype()
+    else:
+        genotype = model.genotype()
+    logging.info('genotype = %s', genotype)
+
+    #print(F.softmax(model.alphas_normal, dim=-1))
+    #print(F.softmax(model.alphas_reduce, dim=-1))
+
+    # training
+
+    train_acc, train_obj = train(train_queue, valid_queue, mixModel, architect, criterion, optimizer, lr,epoch)
+    logging.info('train_acc %f train_loss %f', train_acc, train_obj)
+
+    # validation
+    if args.epochs-epoch<=1:
+      valid_acc, valid_obj = infer(valid_queue, mixModel, criterion)
+      logging.info('valid_acc %f', valid_acc)
+
+    utils.save(model, os.path.join(args.save, 'weights{}.pt'.format(epoch) ))
+
+
+def getDataQueue(args):
   train_transform, valid_transform = utils._data_transforms_cifar10(args)
   data_dir = args.data_dir
   traindir = os.path.join(data_dir, 'train')
@@ -126,39 +171,7 @@ def main():
         shuffle=True,
         pin_memory=True, 
         num_workers=args.workers)
-
-  pretrainModel = SENet.se_resnet50(num_classes=CLASSES)
-  mixModel = new_search_model.mixModel(preTrainModel, model, criterion)
-
-  architect = Architect(model, args)
-  
-  scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
-        optimizer, float(args.epochs), eta_min=args.learning_rate_min)
-  for epoch in range(args.epochs):
-    scheduler.step()
-    lr = scheduler.get_lr()[0]
-    logging.info('epoch %d lr %e', epoch, lr)
-    ##if model is DataParallel
-    if(hasattr(model, 'module') ):
-        genotype = model.module.genotype()
-    else:
-        genotype = model.genotype()
-    logging.info('genotype = %s', genotype)
-
-    #print(F.softmax(model.alphas_normal, dim=-1))
-    #print(F.softmax(model.alphas_reduce, dim=-1))
-
-    # training
-
-    train_acc, train_obj = train(train_queue, valid_queue, mixModel, architect, criterion, optimizer, lr,epoch)
-    logging.info('train_acc %f train_loss %f', train_acc, train_obj)
-
-    # validation
-    if args.epochs-epoch<=1:
-      valid_acc, valid_obj = infer(valid_queue, mixModel, criterion)
-      logging.info('valid_acc %f', valid_acc)
-
-    utils.save(model, os.path.join(args.save, 'weights{}.pt'.format(epoch) ))
+  return train_queue, valid_queue
 
 
 def train(train_queue, valid_queue, model, architect, criterion, optimizer, lr, epoch):
