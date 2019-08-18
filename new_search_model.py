@@ -285,7 +285,7 @@ class mixModel(nn.Module):
     self.splitStage = 1 #1~3
 
   def _loss(self, input, target):
-    logits = self(input, self.splitStage)
+    logits = self(input)
     return self._criterion(logits, target) 
 
   def forward(self, x):
