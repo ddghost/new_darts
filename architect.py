@@ -14,22 +14,22 @@ class Architect(object):
     self.network_momentum = args.momentum
     self.network_weight_decay = args.weight_decay
     self.mixModel = mixModel
-    #if model is DataParallel
+    #if nasModel is DataParallel
     if(hasattr(mixModel.nasModel, 'module') ):
-        self.model = mixModel.nasModel.module
+        self.nasModel = mixModel.nasModel.module
     else:
-        self.model = mixModel.nasModel
-    self.optimizer = torch.optim.Adam(self.mixModel.nasModel.arch_parameters(),
+        self.nasModel = mixModel.nasModel
+    self.optimizer = torch.optim.Adam(self.nasModel.arch_parameters(),
             lr=args.arch_learning_rate, betas=(0.5, 0.999), weight_decay=args.arch_weight_decay)
 
   def _compute_unrolled_model(self, input, target, eta, network_optimizer):
     loss = self.mixModel._loss(input, target)
-    theta = _concat(self.model.parameters()).data
+    theta = _concat(self.nasModel.parameters()).data
     try:
-      moment = _concat(network_optimizer.state[v]['momentum_buffer'] for v in self.model.parameters()).mul_(self.network_momentum)
+      moment = _concat(network_optimizer.state[v]['momentum_buffer'] for v in self.nasModel.parameters()).mul_(self.network_momentum)
     except:
       moment = torch.zeros_like(theta)
-    dtheta = _concat(torch.autograd.grad(loss, self.model.parameters())).data + self.network_weight_decay*theta
+    dtheta = _concat(torch.autograd.grad(loss, self.nasModel.parameters())).data + self.network_weight_decay*theta
     unrolled_model = self._construct_model_from_theta(theta.sub(eta, moment+dtheta))
     return unrolled_model
 
@@ -57,18 +57,18 @@ class Architect(object):
     for g, ig in zip(dalpha, implicit_grads):
       g.data.sub_(eta, ig.data)
 
-    for v, g in zip(self.model.arch_parameters(), dalpha):
+    for v, g in zip(self.nasModel.arch_parameters(), dalpha):
       if v.grad is None:
         v.grad = Variable(g.data)
       else:
         v.grad.data.copy_(g.data)
 
   def _construct_model_from_theta(self, theta):
-    model_new = self.model.new()
-    model_dict = self.model.state_dict()
+    model_new = self.nasModel.new()
+    model_dict = self.nasModel.state_dict()
 
     params, offset = {}, 0
-    for k, v in self.model.named_parameters():
+    for k, v in self.nasModel.named_parameters():
       v_length = np.prod(v.size())
       params[k] = theta[offset: offset+v_length].view(v.size())
       offset += v_length
@@ -80,17 +80,17 @@ class Architect(object):
 
   def _hessian_vector_product(self, vector, input, target, r=1e-2):
     R = r / _concat(vector).norm()
-    for p, v in zip(self.model.parameters(), vector):
+    for p, v in zip(self.nasModel.parameters(), vector):
       p.data.add_(R, v)
     loss = self.mixModel._loss(input, target)
-    grads_p = torch.autograd.grad(loss, self.model.arch_parameters())
+    grads_p = torch.autograd.grad(loss, self.nasModel.arch_parameters())
 
-    for p, v in zip(self.model.parameters(), vector):
+    for p, v in zip(self.nasModel.parameters(), vector):
       p.data.sub_(2*R, v)
-    loss = self.model._loss(input, target)
-    grads_n = torch.autograd.grad(loss, self.model.arch_parameters())
+    loss = self.nasModel._loss(input, target)
+    grads_n = torch.autograd.grad(loss, self.nasModel.arch_parameters())
 
-    for p, v in zip(self.model.parameters(), vector):
+    for p, v in zip(self.nasModel.parameters(), vector):
       p.data.add_(R, v)
 
     return [(x-y).div_(2*R) for x, y in zip(grads_p, grads_n)]
