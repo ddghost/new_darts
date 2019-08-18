@@ -292,5 +292,5 @@ class mixModel(nn.Module):
 
   def forward(self, x):
     out = self.nasModel(x, self.splitStage)
-    out = self.preTrainModel(nasModel, self.splitStage + 1)
+    out = self.preTrainModel(out, self.splitStage + 1)
     return out
