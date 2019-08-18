@@ -190,11 +190,12 @@ class Network(nn.Module):
       out = self.global_pooling(s1)
       logits = self.classifier(out.view(out.size(0),-1))
     return logits
-'''
-  def _loss(self, input, target, endStage = 3):
+#not use
+  def _loss(self, input, target):
     logits = self(input, endStage)
     return self._criterion(logits, target) 
-'''
+
+
   def _initialize_alphas(self):
     k = sum(1 for i in range(self._steps) for n in range(2+i))
     num_ops = len(PRIMITIVES)
