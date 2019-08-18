@@ -161,17 +161,17 @@ class Network(nn.Module):
           start = end
           n += 1
           weights2 = torch.cat([weights2,tw2],dim=0)
-      else:
-        weights = F.softmax(self.alphas_normal, dim=-1)
-        n = 3
-        start = 2
-        weights2 = F.softmax(self.betas_normal[0:2], dim=-1)
-        for i in range(self._steps-1):
-          end = start + n
-          tw2 = F.softmax(self.betas_normal[start:end], dim=-1)
-          start = end
-          n += 1
-          weights2 = torch.cat([weights2,tw2],dim=0)
+    else:
+      weights = F.softmax(self.alphas_normal, dim=-1)
+      n = 3
+      start = 2
+      weights2 = F.softmax(self.betas_normal[0:2], dim=-1)
+      for i in range(self._steps-1):
+        end = start + n
+        tw2 = F.softmax(self.betas_normal[start:end], dim=-1)
+        start = end
+        n += 1
+        weights2 = torch.cat([weights2,tw2],dim=0)
     return cell(s0, s1, weights, weights2)
   
   def forward(self, input, endStage):
