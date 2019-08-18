@@ -101,7 +101,7 @@ def main():
   pretrainModel.load_state_dict(preTrainCheckpoint['state_dict'])
   mixModel = new_search_model.mixModel(pretrainModel, model, criterion)
 
-  architect = Architect(model, args)
+  architect = Architect(mixModel, args)
   
   scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
         optimizer, float(args.epochs), eta_min=args.learning_rate_min)
