@@ -191,10 +191,12 @@ class Network(nn.Module):
         endCellIndex = 8
     for i in range(0, endCellIndex + 1):
       s0, s1 = s1, self.forwardCell(i, self.cells[i], s0, s1)
+    out = s1
     if(endStage == 3):
-      out = self.global_pooling(s1)
-      logits = self.classifier(out.view(out.size(0),-1))
-    return logits
+      out = self.global_pooling(out)
+      out = self.classifier(out.view(out.size(0),-1))
+
+    return out
 #not use
   '''
   def _loss(self, input, target):
