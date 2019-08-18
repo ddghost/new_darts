@@ -265,6 +265,7 @@ class Network(nn.Module):
 
 class mixModel(nn.Module):
   def __init__(self, preTrainModel, nasModel, criterion):
+    super(mixModel, self).__init__()
     self.preTrainModel = preTrainModel
     self.nasModel = nasModel
     self._criterion = criterion
