@@ -98,7 +98,7 @@ def main():
     logging.info('pre_train_model_path must enter')
     return 
   preTrainCheckpoint = torch.load(args.pre_train_model_path)
-  pretrainModel.load_state_dict(pre_train_model_path['state_dict'])
+  pretrainModel.load_state_dict(preTrainCheckpoint['state_dict'])
   mixModel = new_search_model.mixModel(preTrainModel, model, criterion)
 
   architect = Architect(model, args)
