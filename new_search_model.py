@@ -190,7 +190,7 @@ class Network(nn.Module):
     elif(endStage == 3):
         endCellIndex = 8
     for i in range(0, endCellIndex + 1):
-      s0, s1 = s1, self.forwardCell(i, self.cell[i], s0, s1)
+      s0, s1 = s1, self.forwardCell(i, self.cells[i], s0, s1)
     if(endStage == 3):
       out = self.global_pooling(s1)
       logits = self.classifier(out.view(out.size(0),-1))
