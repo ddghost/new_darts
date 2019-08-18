@@ -93,10 +93,11 @@ def main():
   pretrainModel = SENet.se_resnet50(num_classes=CLASSES)
   pretrainModel = pretrainModel.cuda()
   pretrainModel = nn.DataParallel(pretrainModel, device_ids)
-
+  '''
   if(args.pre_train_model_path==''):
     logging.info('pre_train_model_path must enter')
     return 
+  '''
   preTrainCheckpoint = torch.load(args.pre_train_model_path)
   pretrainModel.load_state_dict(preTrainCheckpoint['state_dict'])
   mixModel = new_search_model.mixModel(pretrainModel, model, criterion)
