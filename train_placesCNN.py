@@ -19,7 +19,6 @@ import torchvision.datasets as datasets
 import torchvision.models as models
 import torch.nn.functional as F
 
-import wideresnet
 import pdb
 import SENet
 import progressbar
@@ -74,10 +73,8 @@ def main():
     print(args)
     # create model
     print("=> creating model '{}'".format(args.arch))
-    if args.arch.lower().startswith('wideresnet'):
-        # a customized resnet model with last feature map size as 14x14 for better class activation mapping
-        model  = wideresnet.resnet50(num_classes=args.num_classes)
-    elif args.arch.lower().startswith('se'):
+
+    if args.arch.lower().startswith('se'):
         model  = SENet.se_resnet50(num_classes=args.num_classes)
     elif args.arch.lower().startswith('new'):
         model  = SENet.se_resnet(num_classes=args.num_classes)
