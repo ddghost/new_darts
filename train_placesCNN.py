@@ -73,7 +73,7 @@ def main():
     print(args)
     # create model
     print("=> creating model '{}'".format(args.arch))
-
+    torch.cuda.set_device(ini_device)
     if args.arch.lower().startswith('se'):
         model  = SENet.se_resnet50(num_classes=args.num_classes)
     elif args.arch.lower().startswith('new'):
@@ -85,9 +85,9 @@ def main():
 
     if args.arch.lower().startswith('alexnet') or args.arch.lower().startswith('vgg'):
         model.features = torch.nn.DataParallel(model.features, device_ids)
-        model.to(ini_device)
+        model.cuda()
     else:
-        model = torch.nn.DataParallel(model, device_ids).to(ini_device)
+        model = torch.nn.DataParallel(model, device_ids).cuda()
 
 
 
@@ -137,7 +137,7 @@ def main():
         num_workers=args.workers, pin_memory=True)
     
     # define loss function (criterion) and pptimizer
-    criterion = nn.CrossEntropyLoss().to(ini_device)
+    criterion = nn.CrossEntropyLoss().cuda()
 
     if args.evaluate:
         #validate(val_loader, model, criterion)
@@ -202,7 +202,7 @@ def train(train_loader, model, criterion, optimizer, epoch):
         # measure data loading time
         data_time.update(time.time() - end)
  
-        target = target.to(ini_device ,non_blocking=True)
+        target = target.cuda(non_blocking=True)
         input_var = torch.autograd.Variable(input)
         target_var = torch.autograd.Variable(target)
         # compute output
@@ -249,7 +249,7 @@ def validate(val_loader, model, criterion):
     end = time.time()
     with torch.no_grad():
         for i, (input, target) in enumerate(val_loader):
-            target = target.to(ini_device, non_blocking=True)
+            target = target.cuda(non_blocking=True)
             output = model(input)
             loss = criterion(output, target)
 
