@@ -122,11 +122,11 @@ class ResNet(nn.Module):
 
         return nn.Sequential(*layers)
 
-    def forward(self, x, startStage):
-        topLeft = x[:,:,:,:112,:112]
-        topRight = x[:,:,:,112:,:112]
-        bottomLeft = x[:,:,:,112:,112:]
-        bottomRight = x[:,:,:,:112,112:]
+    def forward(self, x):
+        topLeft = x[:,:,:112,:112]
+        topRight = x[:,:,112:,:112]
+        bottomLeft = x[:,:,112:,112:]
+        bottomRight = x[:,:,:112,112:]
         x = torch.cat([topLeft,topRight,bottomLeft,bottomRight], 1)
         x = self.conv1(x)
         x = self.bn1(x)
